@@ -1,0 +1,12 @@
+const String onbordingScreenRoute = "onbording";
+const String logInScreenRoute = "login";
+const String signUpScreenRoute = "signup";
+const String homeScreenRoute = "home";
+const String profileScreenRoute = "profile";
+const String addScreenRoute = "add";
+const String entryPointScreenRoute = "entry_point";
+const String passwordResetScreenRoute = "PasswordRest";
+const String addUserScreenRoute = "adduser";
+const String newPasswordScreenRoute = "password";
+const String newVerifyCodeScreenRouter = "verifycode";
+const String forcedProfileUpdateRoute = "forceupdate";

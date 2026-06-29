@@ -1,0 +1,96 @@
+stages:
+  - setup
+  - run_pipeline
+  - save_model 
+  - hotreload
+variables:
+  CONDA_PATH: "C:\\Users\\HP\\anaconda3"
+  CONDA_ENV_NAME: "Layoutlm"
+  JUPYTER_ALLOW_INSECURE_WRITES: "1"
+  JUPYTER_CONFIG_DIR: "C:\\temp\\jupyter_config"
+  JUPYTER_DATA_DIR: "C:\\temp\\jupyter_data"
+
+setup_environment:
+  stage: setup
+  tags:
+    - PFE
+  script:
+    - echo "=== Vérification de l'environnement conda ==="
+    - $env:PATH = "$env:CONDA_PATH;$env:CONDA_PATH\\Scripts;$env:CONDA_PATH\\Library\\bin;$env:PATH"
+    - |
+      # Vérifie si l'environnement existe déjà
+      $envExists = & conda env list | Select-String -Pattern "$env:CONDA_ENV_NAME"
+      if (-not $envExists) {
+        echo "Création de l'environnement conda..."
+        conda create -n $env:CONDA_ENV_NAME python=3.8 -y
+        echo "Installation des dépendances..."
+        conda activate $env:CONDA_ENV_NAME
+        pip install -r requirements.txt
+        echo "Environnement créé avec succès"
+      } else {
+        echo "L'environnement $env:CONDA_ENV_NAME existe déjà"
+      }
+  only:
+    - main
+    - develop
+  when: manual  # Permet de lancer manuellement seulement quand besoin
+
+layoutlm_pipeline:
+  stage: run_pipeline
+  tags:
+    - PFE
+  script:
+    - echo "=== Début de l'exécution ==="
+    - whoami
+    - Write-Output "Liste des environnements conda"
+    - '& "C:\Users\HP\anaconda3\Scripts\conda.exe" info --envs'
+    - Write-Output "Activation de l'environnement Layoutlm"
+    - '& "C:\Users\HP\anaconda3\Scripts\activate.bat" Layoutlm'
+    - Write-Output "Exécution du notebook avec nbconvert"
+    - '& "C:\Users\HP\anaconda3\envs\Layoutlm\python.exe" -m nbconvert --to notebook --execute "C:\Users\HP\Downloads\gitlab.ipynb" --output "gitlab_output.ipynb"'
+  needs: []  # Peut s'exécuter indépendamment
+  only:
+    - main
+    - develop
+
+save_model:
+  stage: save_model
+  tags:
+    - PFE
+  script:
+    - echo "=== Sauvegarde du modèle si meilleure performance ==="
+    - Write-Output "Activation de l'environnement Layoutlm"
+    - '& "C:\Users\HP\anaconda3\Scripts\activate.bat" Layoutlm'
+    - Write-Output "Exécution du script de sauvegarde"
+    - '& "C:\Users\HP\anaconda3\envs\Layoutlm\python.exe" -m nbconvert --to notebook --execute "C:\Users\HP\Downloads\gitlabdownload.ipynb" --output "gitlab_outputdownload.ipynb"'
+  only:
+    - main
+    - develop
+  when: manual  # Permet de lancer manuellement seulement quand besoin
+  needs:
+    - layoutlm_pipeline
+
+hotreload_script:
+  stage: hotreload
+  tags:
+    - PFE
+  script:
+    - echo "=== Hot Reload - Arrêt et redémarrage du script ==="
+    - |
+      # Arrêt sélectif des scripts nbconvert/jupyter seulement
+      Get-Process | Where-Object {$_.CommandLine -like "*nbconvert*" -or $_.CommandLine -like "*jupyter*" -or $_.CommandLine -like "*gitlab.ipynb*" -or $_.CommandLine -like "*hotreload.ipynb*"} | ForEach-Object {
+        Stop-Process -Id $_.Id -Force
+      }
+    - echo "Attente de 5 secondes..."
+    - Start-Sleep -Seconds 5
+    - Write-Output "Activation de l'environnement layoutlmv3_env"
+    - '& "C:\Users\HP\anaconda3\Scripts\activate.bat" layoutlmv3_env'
+    - Write-Output "Installation de papermill si nécessaire"
+    - '& "C:\Users\HP\anaconda3\envs\layoutlmv3_env\python.exe" -m pip install papermill'
+    - Write-Output "Exécution du notebook avec papermill (cellule par cellule)"
+    - '& "C:\Users\HP\anaconda3\envs\layoutlmv3_env\python.exe" -m papermill "C:\Users\HP\Downloads\hotreload.ipynb" "hotreload_output.ipynb" --progress-bar'
+  only:
+    - main
+    - develop
+  when: manual
+  needs: []

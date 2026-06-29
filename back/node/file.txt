@@ -1,0 +1,2 @@
+on accede a l'id avec :req.user.userId 
+ decodedToken content: {userId: 67ddea72ca6d228206edf539, email: saraby@gmail.com, role: RF, iat: 1745072728, exp: 1745101528}
