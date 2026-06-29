@@ -1,6 +1,6 @@
-# Telnet-GPF: Document Information Extraction Platform
+# Telnet-GPF
 
-This project presents a modular, end-to-end architecture for document management and automated Named Entity Recognition (NER) on invoices, developed as part of a Graduation Project (PFE).
+This repository contains a responsive web and mobile platform designed for enterprise project management and automated invoice tracking. Built as a comprehensive graduation project, the system combines a customized corporate workflow with AI to simplify document processing.
 
 ---
 
@@ -13,7 +13,7 @@ The ecosystem is divided into independent components to separate application res
   * **Node.js + Express (`back/node/`):** Main orchestration API for business logic and user management.
   * **Python + Flask (`back/ner/`):** Dedicated AI inference microservice that loads the document processing model.
 * **Model (`layoutlm/`):** Standalone directory reserved for the final weights, configurations, and vocabulary tokens of the fine-tuned multimodal model. *LayoutLM is a research model developed by Microsoft Research; for more context, please refer to the official documentation and research papers.*
-* **MLOps Pipeline (`gitlab-train/`):** Source code from the GitLab project containing data preprocessing and training scripts. The model is integrated into a CI/CD loop for continuous improvement.
+* **MLOps Pipeline (`Gitlab/`):** Source code from the GitLab project containing data preprocessing and training scripts. The model is integrated into a CI/CD loop for continuous improvement.
 
 ---
 
