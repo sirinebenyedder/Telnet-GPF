@@ -25,3 +25,5 @@ To connect and run these modules locally, you must manually:
 1. **Adjust the server ports and API URLs** so the separate backend services can call each other.
 2. **Update the local paths** to point to your files and directories.
 3. **Create the `config.json` file** inside the `layoutlm/` directory to define your local `model_path` and metrics, as this environment configuration is not provided by default.
+
+📄 **[Click here to open the complete Graduation Report](./french-report.pdf?raw=true)**
